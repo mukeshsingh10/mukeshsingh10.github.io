@@ -1,11 +1,72 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ReadingTime from "../components/ReadingTime.astro";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const posts = await getCollection("blog");
+
+type BlogPost = (typeof posts)[number];
+
+const sortedPosts: BlogPost[] = [...posts]
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<BaseLayout
+  title="Mukesh Mahato"
+  description="Software engineer writing about Go, systems, infrastructure and open source."
+>
+  <section class="hero">
+    <div class="container">
+      <h1>
+        Software engineering,
+        <br />
+        explained from the source.
+      </h1>
+
+      <p>
+        I'm Mukesh Mahato. I write about Go, systems, infrastructure and
+        open source while learning how real software works.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Recent writing</h2>
+        <a href="/blog" class="section-link">View all →</a>
+      </div>
+
+      <div class="post-list">
+        {
+          sortedPosts.map((post) => (
+            <a class="post-item" href={`/blog/${post.id}/`}>
+              <div class="post-item-meta">
+                <small class="post-date">
+                  {post.data.pubDate.toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </small>
+                <span class="meta-dot">•</span>
+                <ReadingTime content={post.body ?? ""} />
+              </div>
+
+              <h3 class="post-title">{post.data.title}</h3>
+
+              <p class="post-description">{post.data.description}</p>
+
+              <div class="tags">
+                {post.data.tags.map((tag: string) => (
+                  <span>{tag}</span>
+                ))}
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>

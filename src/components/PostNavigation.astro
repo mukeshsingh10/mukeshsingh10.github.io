@@ -1,0 +1,34 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  prevPost?: CollectionEntry<"blog">;
+  nextPost?: CollectionEntry<"blog">;
+}
+
+const { prevPost, nextPost } = Astro.props;
+---
+
+{
+  (prevPost || nextPost) && (
+    <nav class="post-nav" aria-label="Post navigation">
+      {prevPost ? (
+        <a href={`/blog/${prevPost.id}/`} class="post-nav-item prev">
+          <span class="post-nav-label">← Previous</span>
+          <span class="post-nav-title">{prevPost.data.title}</span>
+        </a>
+      ) : (
+        <div />
+      )}
+
+      {nextPost ? (
+        <a href={`/blog/${nextPost.id}/`} class="post-nav-item next">
+          <span class="post-nav-label">Next →</span>
+          <span class="post-nav-title">{nextPost.data.title}</span>
+        </a>
+      ) : (
+        <div />
+      )}
+    </nav>
+  )
+}

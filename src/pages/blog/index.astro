@@ -1,0 +1,65 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ReadingTime from "../../components/ReadingTime.astro";
+
+const posts = await getCollection("blog");
+
+type BlogPost = (typeof posts)[number];
+
+const sortedPosts: BlogPost[] = [...posts].sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<BaseLayout
+  title="Blog | Mukesh Mahato"
+  description="Writing about software engineering, Go, backend systems, and open source."
+>
+  <main class="container">
+    <section class="page-header">
+      <p class="eyebrow">WRITING</p>
+
+      <h1>Software engineering notes.</h1>
+
+      <p class="page-description">
+        Things I'm learning while working with Go, backend systems,
+        infrastructure, and open source.
+      </p>
+    </section>
+
+    <section class="post-list" style="max-width: 800px;">
+      {
+        sortedPosts.map((post) => (
+          <article class="post-card">
+            <div class="post-meta">
+              <time datetime={post.data.pubDate.toISOString()}>
+                {post.data.pubDate.toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </time>
+              <span class="meta-dot">•</span>
+              <ReadingTime content={post.body ?? ""} />
+            </div>
+
+            <h2>
+              <a href={`/blog/${post.id}/`}>
+                {post.data.title}
+              </a>
+            </h2>
+
+            <p>{post.data.description}</p>
+
+            <div class="tags">
+              {post.data.tags.map((tag: string) => (
+                <span>{tag}</span>
+              ))}
+            </div>
+          </article>
+        ))
+      }
+    </section>
+  </main>
+</BaseLayout>
