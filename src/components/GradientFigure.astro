@@ -1,0 +1,54 @@
+---
+---
+
+<figure class="gradient-figure" data-gradient>
+  <div class="figure-heading">
+    <span class="eyebrow">Fig. 01 / Queue Dynamics</span>
+    <span class="figure-status"><span aria-hidden="true"></span>Nominal load</span>
+  </div>
+  <svg class="gradient-plot" viewBox="0 0 460 290" role="img" aria-labelledby="gradient-title gradient-description">
+    <title id="gradient-title">System Latency vs. Utilization</title>
+    <desc id="gradient-description">Latency remains flat at low utilization but increases exponentially as queue utilization crosses 70%.</desc>
+    <defs>
+      <pattern id="plot-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+        <circle cx="1" cy="1" r="1" fill="currentColor" opacity=".16"></circle>
+      </pattern>
+    </defs>
+    <rect x="28" y="12" width="404" height="258" rx="4" fill="url(#plot-grid)"></rect>
+    <g class="plot-axes" fill="none" stroke="currentColor" stroke-width="1">
+      <path d="M40 240H422M60 24V250"></path>
+      <path d="m416 236 6 4-6 4M56 30l4-6 4 6"></path>
+    </g>
+    <text class="plot-label" x="420" y="260">Load (ρ)</text>
+    <text class="plot-label" x="72" y="32">Latency (T)</text>
+    <text class="plot-label" x="45" y="255">0</text>
+    <!-- Latency curve: flat at low load, hockey stick curve up to right -->
+    <path class="correct-line" d="M60 230 C 180 230, 300 215, 380 40" fill="none" stroke-width="3" stroke-linecap="round"></path>
+    <path class="old-tangent" d="M60 230H380" fill="none" stroke-width="2.5" stroke-dasharray="5 6" stroke-linecap="round"></path>
+    <circle class="plot-halo" cx="60" cy="230" r="13"></circle>
+    <circle class="plot-point" cx="60" cy="230" r="5.5" stroke-width="3"></circle>
+    <text class="line-annotation" x="250" y="70">T = 1 / (1 - ρ)</text>
+    <text class="old-annotation" x="220" y="215">baseline service time</text>
+    <text class="equation-label" x="80" y="48">Little's Law &amp; Queuing</text>
+  </svg>
+  <div class="gradient-values" aria-live="polite" aria-atomic="true">
+    <div>
+      <span>System Load (ρ)</span>
+      <strong data-forward>0.00</strong>
+    </div>
+    <div>
+      <span>Total Latency</span>
+      <strong class="correct-value" data-total>1.00x</strong>
+    </div>
+    <div>
+      <span>Queue Delay</span>
+      <strong class="old-value" data-old>0.00x</strong>
+    </div>
+  </div>
+  <div class="gradient-control" hidden>
+    <label for="gradient-x">Move load <output id="gradient-output" for="gradient-x">0.0</output></label>
+    <input id="gradient-x" type="range" min="0" max="0.85" value="0" step="0.05" aria-describedby="gradient-hint">
+    <button type="button" class="text-button" data-reset>Reset to zero ↺</button>
+  </div>
+  <figcaption id="gradient-hint">At low load, queue delay is negligible. Beyond 70%, latency spikes.</figcaption>
+</figure>

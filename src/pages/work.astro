@@ -1,0 +1,50 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { siteConfig } from "../site.config";
+import { projects } from "../data/contributions";
+---
+
+<BaseLayout
+  title={`Projects · ${siteConfig.author}`}
+  description="Selected open source tools, systems experiments, and backend infrastructure projects."
+  bodyClass="inner-page"
+>
+  <div class="shell work-page">
+    <header class="page-heading">
+      <p class="eyebrow">Projects &amp; Open Source</p>
+      <h1>Work that made<br>it <em>to production.</em></h1>
+      <p class="work-intro">
+        Selected open source tools, systems experiments, and backend infrastructure projects in Go and distributed systems.
+      </p>
+      <a class="primary-link" href={siteConfig.githubUrl} target="_blank" rel="noopener noreferrer">
+        Browse all repositories on GitHub ↗
+      </a>
+    </header>
+
+    <div class="work-list">
+      {projects.map((item) => (
+        <article class="work-entry">
+          <div>
+            <p class="eyebrow">{item.category}</p>
+            <h2>{item.project}</h2>
+          </div>
+          <div>
+            <p>{item.description}</p>
+            <a class="quiet-link" href={item.url} target="_blank" rel="noopener noreferrer">
+              Repository ↗
+            </a>
+            {item.noteUrl && (
+              <a class="work-note-link" href={item.noteUrl}>
+                Read write-up ↗
+              </a>
+            )}
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <p class="work-footnote">
+      Open source repositories and engineering projects by {siteConfig.author}.
+    </p>
+  </div>
+</BaseLayout>

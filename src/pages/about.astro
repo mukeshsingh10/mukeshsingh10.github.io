@@ -1,21 +1,36 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { siteConfig } from "../site.config";
 ---
 
-<BaseLayout title="About · Mukesh Mahato">
-  <div class="container">
-    <div class="about-content">
+<BaseLayout
+  title={`About · ${siteConfig.author}`}
+  description="Software engineer interested in Go, systems, infrastructure, and open source."
+  bodyClass="inner-page"
+>
+  <article class="page-shell">
+    <header class="page-heading">
+      <p class="eyebrow">Inside the notebook</p>
       <h1>About</h1>
-
+    </header>
+    <div class="prose page-content">
       <p>
-        I'm Mukesh Mahato, a software engineer interested in Go, systems,
-        infrastructure and open source.
+        I'm <strong>{siteConfig.author}</strong>, a software engineer interested in Go, systems, infrastructure, and open source software.
       </p>
 
       <p>
-        I use this site to document what I learn while working with real
-        software and large codebases.
+        I use this site to document what I learn while working with real software, distributed systems, and large codebases. I'm drawn to understanding how things actually function beneath the abstractions: how concurrency primitives operate, how backends handle failure, and the subtle trade-offs that make systems resilient.
+      </p>
+
+      <p>
+        Writing here helps me clarify my thinking, follow problems to their source, and share practical insights from day-to-day engineering.
+      </p>
+
+      <p>
+        <a href={siteConfig.githubUrl} target="_blank" rel="noopener noreferrer">
+          GitHub profile and repositories ↗
+        </a>
       </p>
     </div>
-  </div>
+  </article>
 </BaseLayout>

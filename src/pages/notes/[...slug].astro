@@ -1,0 +1,103 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { siteConfig } from "../../site.config";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+
+  const sorted = [...posts].sort((a, b) => {
+    if (a.data.order !== undefined && b.data.order !== undefined) {
+      return a.data.order - b.data.order;
+    }
+    return b.data.pubDate.valueOf() - a.data.pubDate.valueOf();
+  });
+
+  return sorted.map((post) => ({
+    params: { slug: post.id },
+    props: {
+      post,
+      allPosts: sorted,
+    },
+  }));
+}
+
+interface Props {
+  post: CollectionEntry<"blog">;
+  allPosts: CollectionEntry<"blog">[];
+}
+
+const { post, allPosts } = Astro.props;
+const { Content } = await render(post);
+
+// Select up to 3 other posts for the "More writing" section
+const otherPosts = allPosts.filter((p) => p.id !== post.id).slice(0, 3);
+
+const displayEyebrow = post.data.eyebrow || `${post.data.project || post.data.tags[0] || "Article"} / ${post.data.categoryLabel || "Engineering"}`;
+---
+
+<BaseLayout
+  title={`${post.data.title} · ${siteConfig.author}`}
+  description={post.data.description}
+  bodyClass="post-page"
+  ogType="article"
+>
+  <div class="reading-progress" aria-hidden="true"><span></span></div>
+  <article class="article-shell">
+    <header class="article-header">
+      <a class="back-link" href="/#notes">← All writing</a>
+      <p class="eyebrow">{displayEyebrow}</p>
+      <h1>{post.data.title}</h1>
+      <p class="article-deck">{post.data.description}</p>
+      <div class="article-meta">
+        <span>{siteConfig.author}</span>
+        <time datetime={post.data.pubDate.toISOString().split("T")[0]}>
+          {post.data.pubDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+        </time>
+        <span>{post.data.readTime}</span>
+        {post.data.prUrl && (
+          <a href={post.data.prUrl} target="_blank" rel="noopener noreferrer">Code reference ↗</a>
+        )}
+      </div>
+    </header>
+
+    <div class="article-grid">
+      <aside class="article-sidebar">
+        <nav class="article-toc" aria-label="On this page" hidden>
+          <p class="eyebrow">On this page</p>
+          <ol></ol>
+        </nav>
+        <a class="sidebar-back" href="/#notes">← Back to writing</a>
+      </aside>
+
+      <div class="article-content prose">
+        <Content />
+      </div>
+    </div>
+
+    {post.data.prUrl && (
+      <aside class="article-source">
+        <span class="eyebrow">Reference</span>
+        <p>This article references code and implementation patterns from {post.data.project || "open source"}.</p>
+        <a href={post.data.prUrl} target="_blank" rel="noopener noreferrer">
+          View repository <span aria-hidden="true">↗</span>
+        </a>
+      </aside>
+    )}
+
+    {otherPosts.length > 0 && (
+      <section class="read-next" aria-labelledby="read-next-title">
+        <p class="eyebrow" id="read-next-title">More writing</p>
+        <div>
+          {otherPosts.map((other) => (
+            <a href={`/notes/${other.id}/`}>
+              <span>{other.data.project || other.data.tags[0] || "Article"}</span>
+              <strong>{other.data.title}</strong>
+              <span aria-hidden="true">↗</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+  </article>
+</BaseLayout>

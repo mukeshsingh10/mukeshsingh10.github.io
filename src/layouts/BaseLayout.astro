@@ -1,119 +1,55 @@
 ---
-import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { siteConfig } from "../site.config";
 
 interface Props {
-    title: string;
-    description?: string;
+  title?: string;
+  description?: string;
+  bodyClass?: string;
+  ogType?: string;
+  canonicalUrl?: string;
 }
 
 const {
-    title,
-    description = "Software engineer interested in Go, systems, infrastructure and open source.",
+  title = siteConfig.title,
+  description = siteConfig.description,
+  bodyClass = "inner-page",
+  ogType = "website",
+  canonicalUrl = Astro.url.href,
 } = Astro.props;
+
+const currentPath = Astro.url.pathname;
 ---
 
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width" />
-
-        <!-- Favicon -->
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="icon" href="/favicon.ico" />
-
-        <!-- Google Fonts: Inter + JetBrains Mono -->
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-            rel="stylesheet"
-        />
-
-        <meta name="generator" content={Astro.generator} />
-        <title>{title}</title>
-        <meta name="description" content={description} />
-    </head>
-
-    <body>
-        <!-- Reading progress bar -->
-        <div class="progress-bar" id="progress-bar" aria-hidden="true"></div>
-
-        <header class="site-header">
-            <div class="container nav">
-                <a class="logo" href="/">
-                    Mukesh Mahato
-                </a>
-
-                <button
-                    class="nav-toggle"
-                    id="nav-toggle"
-                    aria-label="Toggle navigation"
-                    aria-expanded="false"
-                >
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-
-                <nav class="nav-links" id="nav-links">
-                    <a href="/blog">Writing</a>
-                    <a href="/about">About</a>
-                    <a
-                        href="https://github.com/mukeshsingh10"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        GitHub
-                    </a>
-                </nav>
-            </div>
-        </header>
-
-        <main>
-            <slot />
-        </main>
-
-        <footer class="site-footer">
-            <div class="container">
-                © {new Date().getFullYear()} Mukesh Mahato
-            </div>
-        </footer>
-
-        <script>
-            // Reading progress bar
-            function updateProgress() {
-                const bar = document.getElementById("progress-bar");
-                if (!bar) return;
-                const scrollTop = window.scrollY;
-                const docHeight =
-                    document.documentElement.scrollHeight - window.innerHeight;
-                if (docHeight <= 0) {
-                    bar.style.width = "0%";
-                    return;
-                }
-                const progress = Math.min((scrollTop / docHeight) * 100, 100);
-                bar.style.width = progress + "%";
-            }
-
-            window.addEventListener("scroll", updateProgress, {
-                passive: true,
-            });
-            updateProgress();
-
-            // Mobile nav toggle
-            const toggle = document.getElementById("nav-toggle");
-            const navLinks = document.getElementById("nav-links");
-            if (toggle && navLinks) {
-                toggle.addEventListener("click", () => {
-                    const expanded =
-                        toggle.getAttribute("aria-expanded") === "true";
-                    toggle.setAttribute(
-                        "aria-expanded",
-                        String(!expanded)
-                    );
-                    navLinks.classList.toggle("nav-open");
-                });
-            }
-        </script>
-    </body>
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f7f5ef">
+  <title>{title}</title>
+  <meta name="description" content={description}>
+  <link rel="canonical" href={canonicalUrl}>
+  <meta property="og:type" content={ogType}>
+  <meta property="og:title" content={title}>
+  <meta property="og:description" content={description}>
+  <meta property="og:url" content={canonicalUrl}>
+  <meta property="og:image" content={new URL("/assets/images/favicon.svg", Astro.url).href}>
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="alternate" type="application/atom+xml" title={siteConfig.siteName} href="/feed.xml">
+  <script is:inline>try{var t=localStorage.getItem('field-notes-theme');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t;else if(window.matchMedia('(prefers-color-scheme: dark)').matches)document.documentElement.dataset.theme='dark'}catch(e){}</script>
+  <link rel="stylesheet" href="/assets/css/site.css">
+  <script src="/assets/js/site.js" defer is:inline></script>
+</head>
+<body class={bodyClass}>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <Header currentPath={currentPath} />
+  <main id="main">
+    <slot />
+  </main>
+  <Footer />
+</body>
 </html>

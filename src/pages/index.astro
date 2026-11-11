@@ -1,72 +1,133 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import ReadingTime from "../components/ReadingTime.astro";
+import GradientFigure from "../components/GradientFigure.astro";
+import { siteConfig } from "../site.config";
+import { projects } from "../data/contributions";
 
-const posts = await getCollection("blog");
+const allPosts = await getCollection("blog");
 
-type BlogPost = (typeof posts)[number];
+// Sort by order if available, else by pubDate descending
+const sortedNotes = [...allPosts].sort((a, b) => {
+  if (a.data.order !== undefined && b.data.order !== undefined) {
+    return a.data.order - b.data.order;
+  }
+  return b.data.pubDate.valueOf() - a.data.pubDate.valueOf();
+});
 
-const sortedPosts: BlogPost[] = [...posts]
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 3);
+const featuredProjects = projects.filter((p) => p.featured);
 ---
 
 <BaseLayout
-  title="Mukesh Mahato"
-  description="Software engineer writing about Go, systems, infrastructure and open source."
+  title={siteConfig.title}
+  description={siteConfig.description}
+  bodyClass="home-page"
 >
-  <section class="hero">
-    <div class="container">
-      <h1>
-        Software engineering,
-        <br />
-        explained from the source.
-      </h1>
+  <div class="shell">
+    <section class="home-hero" aria-labelledby="home-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="small-dot" aria-hidden="true"></span>{siteConfig.hero.eyebrow}</p>
+        <h1 id="home-title" set:html={siteConfig.hero.title} />
+        <p class="hero-intro" set:html={siteConfig.hero.intro} />
+        <p class="hero-detail">{siteConfig.hero.detail}</p>
+        <a class="primary-link" href={siteConfig.hero.featuredStoryUrl}>
+          {siteConfig.hero.featuredStoryText} <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+      <div class="hero-figure">
+        <GradientFigure />
+        <p class="figure-margin-note">A small queue delay at first.<br>An exponential spike past 70%.</p>
+      </div>
+    </section>
 
-      <p>
-        I'm Mukesh Mahato. I write about Go, systems, infrastructure and
-        open source while learning how real software works.
-      </p>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">Recent writing</h2>
-        <a href="/blog" class="section-link">View all →</a>
+    <section class="notes-section" id="notes" aria-labelledby="notes-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">01 / From the notebook</p>
+          <h2 id="notes-title">Writing.</h2>
+        </div>
+        <p class="section-aside">Deep dives into software engineering,<br>architecture, and systems.</p>
       </div>
 
-      <div class="post-list">
-        {
-          sortedPosts.map((post) => (
-            <a class="post-item" href={`/blog/${post.id}/`}>
-              <div class="post-item-meta">
-                <small class="post-date">
-                  {post.data.pubDate.toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </small>
-                <span class="meta-dot">•</span>
-                <ReadingTime content={post.body ?? ""} />
+      <div class="note-filters" role="group" aria-label="Filter engineering notes" hidden>
+        <button type="button" class="selected" data-filter="all" aria-pressed="true">
+          All writing <span>{String(sortedNotes.length).padStart(2, "0")}</span>
+        </button>
+        <button type="button" data-filter="backend" aria-pressed="false">Backend</button>
+        <button type="button" data-filter="systems" aria-pressed="false">Systems</button>
+        <span class="filter-result" role="status" aria-live="polite"></span>
+      </div>
+
+      <div class="notes-list">
+        {sortedNotes.map((note, index) => {
+          const indexStr = String(index + 1).padStart(2, "0");
+          const noteUrl = `/notes/${note.id}/`;
+          const displayProject = note.data.project || (note.data.tags.length > 0 ? note.data.tags[0] : "Article");
+          const displayTag = note.data.tags.length > 1 ? note.data.tags[1] : (note.data.categoryLabel || "Engineering");
+
+          return (
+            <article class="note-row" data-note-category={note.data.category}>
+              <div class="note-index">{indexStr}<span aria-hidden="true">/</span></div>
+              <div class="note-body">
+                <p class="note-meta">
+                  <span>{displayProject}</span>
+                  <span>{displayTag}</span>
+                </p>
+                <h3><a href={noteUrl}>{note.data.title}</a></h3>
+                <p>{note.data.description}</p>
+                <div class="note-bottom">
+                  <time datetime={note.data.pubDate.toISOString().split("T")[0]}>
+                    {note.data.pubDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                  </time>
+                  <span>{note.data.readTime}</span>
+                </div>
               </div>
+              <a class="note-arrow" href={noteUrl} aria-label={`Read ${note.data.title}`}>
+                <span aria-hidden="true">↗</span>
+              </a>
+            </article>
+          );
+        })}
+      </div>
+    </section>
 
-              <h3 class="post-title">{post.data.title}</h3>
+    <section class="work-preview" aria-labelledby="work-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">02 / Beyond the articles</p>
+          <h2 id="work-title">Selected projects.</h2>
+        </div>
+        <a class="quiet-link" href="/work/">All projects <span aria-hidden="true">↗</span></a>
+      </div>
 
-              <p class="post-description">{post.data.description}</p>
+      <div class="contribution-layout">
+        <div class="contribution-summary">
+          <p class="big-number">{siteConfig.projectCount}+<span>open source repositories</span></p>
+          <p class="contribution-caption">
+            Projects in Go, backend infrastructure,<br>and distributed systems tooling.
+          </p>
+          <a class="quiet-link" href={siteConfig.githubUrl} target="_blank" rel="noopener noreferrer">
+            Browse on GitHub ↗
+          </a>
+          <p class="data-date">Checked {siteConfig.countDate}.</p>
+        </div>
 
-              <div class="tags">
-                {post.data.tags.map((tag: string) => (
-                  <span>{tag}</span>
-                ))}
-              </div>
+        <div class="contribution-list">
+          {featuredProjects.map((p) => (
+            <a class="contribution-row" href={p.url} target="_blank" rel="noopener noreferrer">
+              <span class="contribution-project">{p.project}</span>
+              <span class="contribution-description">{p.description}</span>
+              <span class="pr-number">{p.tag} <span aria-hidden="true">↗</span></span>
             </a>
-          ))
-        }
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <aside class="closing-note">
+      <span class="handwritten" aria-hidden="true">{siteConfig.closingNote.handwritten}</span>
+      <p set:html={siteConfig.closingNote.quote}></p>
+      <a class="quiet-link" href={siteConfig.closingNote.linkUrl}>{siteConfig.closingNote.linkText}</a>
+    </aside>
+  </div>
 </BaseLayout>
