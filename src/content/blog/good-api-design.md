@@ -2,6 +2,12 @@
 title: "Good API Design Is Mostly About Making the Right Trade-offs"
 description: "A practical guide to designing APIs that are easy to use, safe to change, and able to survive real-world usage."
 pubDate: "2026-09-14"
+category: "backend"
+categoryLabel: "Backend & Systems"
+project: "Architecture"
+eyebrow: "Architecture / API Design"
+readTime: "8 min read"
+order: 1
 tags:
   - "API Design"
   - "Backend"

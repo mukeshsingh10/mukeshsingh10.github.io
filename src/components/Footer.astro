@@ -1,0 +1,16 @@
+---
+import { siteConfig } from "../site.config";
+---
+
+<footer class="site-footer shell">
+  <div>
+    <a class="footer-title" href="/">{siteConfig.author.toLowerCase()}<span aria-hidden="true">.</span></a>
+    <p>{siteConfig.footer.tagline}</p>
+  </div>
+  <div class="footer-links">
+    <a href={siteConfig.githubUrl} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+    <a href="/feed.xml">RSS ↗</a>
+    <a href="/about/">About</a>
+  </div>
+  <p class="footer-colophon">{siteConfig.footer.colophon}</p>
+</footer>

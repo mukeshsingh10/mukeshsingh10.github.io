@@ -1,0 +1,36 @@
+---
+import { siteConfig } from "../site.config";
+
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = "" } = Astro.props;
+
+const isNotesActive = currentPath === "/" || currentPath.startsWith("/notes") || currentPath.startsWith("/blog");
+const isWorkActive = currentPath.startsWith("/work");
+const isAboutActive = currentPath.startsWith("/about");
+---
+
+<header class="site-header shell">
+  <a class="identity" href="/" aria-label={`${siteConfig.author} home`}>
+    <span class="identity-mark" aria-hidden="true">m<span>/</span>m</span>
+    <span class="identity-copy">
+      <strong>{siteConfig.author.toLowerCase()}</strong>
+      <span>{siteConfig.username}</span>
+    </span>
+  </a>
+  <nav class="site-nav" aria-label="Main navigation">
+    <a href="/#notes" class={isNotesActive ? "active" : ""}>Writing</a>
+    <a href="/work/" class={isWorkActive ? "active" : ""} aria-current={isWorkActive ? "page" : undefined}>Projects</a>
+    <a href="/about/" class={isAboutActive ? "active" : ""} aria-current={isAboutActive ? "page" : undefined}>About</a>
+    <span class="nav-divider" aria-hidden="true"></span>
+    <a class="icon-link" href={siteConfig.githubUrl} aria-label="GitHub profile" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.86c-2.78.6-3.37-1.18-3.37-1.18-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.64-1.33-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02A9.6 9.6 0 0 1 12 6.83c.85 0 1.71.11 2.51.34 1.91-1.3 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.58 4.93.36.31.68.92.68 1.85v2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg>
+    </a>
+    <button class="theme-toggle icon-link" type="button" aria-label="Switch to dark theme" hidden>
+      <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z"/></svg>
+      <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.4 1.4m11.2 11.2L19 19M5 19l1.4-1.4M17.6 6.4 19 5"/></svg>
+    </button>
+  </nav>
+</header>
